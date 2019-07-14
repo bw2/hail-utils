@@ -74,6 +74,8 @@ def get_expr_for_variant_ids(
     return alleles[1:].map(compute_variant_id)
 
 
+
+
 def get_expr_for_variant_type(table: hl.Table) -> hl.str:
     return hl.bind(
         lambda ref_len, alt_len: (

@@ -2,6 +2,34 @@ import hail as hl
 from hail_utils.io import file_exists
 
 
+def get_reference_genome(locus: Union[hl.expr.LocusExpression, hl.expr.IntervalExpression]) -> hl.ReferenceGenome:
+    """
+    Returns the reference genome associated with the input Locus expression
+    :param LocusExpression or IntervalExpression locus: Input locus
+    :return: Reference genome
+    :rtype: ReferenceGenome
+    """
+    if isinstance(locus, hl.expr.LocusExpression):
+        return locus.dtype.reference_genome
+    assert (isinstance(locus, hl.expr.IntervalExpression))
+    return locus.dtype.point_type.reference_genome
+
+
+def filter_to_autosomes(t: Union[hl.MatrixTable, hl.Table]) -> Union[hl.MatrixTable, hl.Table]:
+    """
+    Filters the Table or MatrixTable to autosomes only.
+    This assumes that the input contains a field named `locus` of type Locus
+    :param MatrixTable or Table t: Input MT/HT
+    :return:  MT/HT autosomes
+    :rtype: MatrixTable or Table
+    """
+    reference = get_reference_genome(t.locus)
+    autosomes = hl.parse_locus_interval(f'{reference.contigs[0]}-{reference.contigs[21]}', reference_genome=reference)
+    return hl.filter_intervals(t, [autosomes])
+
+
+
+
 def get_gnomad_ld_pruned_mt(genome_version="GRCh38"):
 
     gnomad_ld_pruned_hg37_path = "gs://gnomad/sample_qc/mt/gnomad.joint.high_callrate_common_biallelic_snps.pruned.mt"

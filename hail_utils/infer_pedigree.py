@@ -2,6 +2,40 @@ from collections import defaultdict
 import hail as hl
 import logging
 
+from hail_utils.filters import filter_to_autosomes, ld_prune
+
+
+def compute_kinship_ht(mt, genome_version="GRCh38"):
+
+    mt = mt.filter_rows(
+        (hl.len(mt.alleles) == 2) &
+        hl.is_snp(mt.alleles[0], mt.alleles[1])
+    )  # leaves ~80% of variants
+
+    mt = hl.variant_qc(mt)
+    mt = mt.filter_rows(
+        mt.variant_qc.call_rate > 0.99
+    )  # leaves ~75% of variants
+
+    mt = mt.filter_rows(mt.info.AF > 0.001) # leaves 100% of variants
+    mt = filter_to_autosomes(mt)
+
+    mt = ld_prune(mt, genome_version=genome_version)
+
+
+    ibd_results_ht = hl.identity_by_descent(mt, maf=mt.info.AF, min=0.10, max=1.0)
+    ibd_results_ht = ibd_results_ht.annotate(
+        ibd0 = ibd_results_ht.ibd.Z0,
+        ibd1 = ibd_results_ht.ibd.Z1,
+        ibd2 = ibd_results_ht.ibd.Z2,
+        pi_hat = ibd_results_ht.ibd.PI_HAT
+    ).drop("ibs0","ibs1","ibs2","ibd")
+
+    return ibd_results_ht
+
+
+
+
 def infer_families(kin_ht: hl.Table,   # the kinship hail table
                    sex: Dict[str, bool], # the dictionary of sexes
                    i_col: str = 'i', # the rest of these are default that can be set to something else if needed
