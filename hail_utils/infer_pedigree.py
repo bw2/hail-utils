@@ -1,4 +1,6 @@
-### Kristen Laricchia's pedigree inference code
+####################################################
+### Kristen Laricchia's pedigree inference code  ###
+####################################################
 
 from collections import defaultdict
 import hail as hl
