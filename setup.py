@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='hail_utils',
-    url='https://github.com/bw2/hail_utils',
+    url='https://github.com/bw2/hail-utils',
     author='Ben',
     author_email='ben.weisburd@gmail.com',
     packages=['hail_utils'],
