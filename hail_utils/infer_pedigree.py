@@ -1,3 +1,5 @@
+### Kristen Laricchia's pedigree inference code
+
 from collections import defaultdict
 import hail as hl
 import logging
