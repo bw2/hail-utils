@@ -2,7 +2,7 @@ import hail as hl
 from hail_utils.io import file_exists
 
 
-def get_reference_genome(locus: Union[hl.expr.LocusExpression, hl.expr.IntervalExpression]) -> hl.ReferenceGenome:
+def get_reference_genome(locus) -> hl.ReferenceGenome:
     """
     Returns the reference genome associated with the input Locus expression
     :param LocusExpression or IntervalExpression locus: Input locus
@@ -15,7 +15,7 @@ def get_reference_genome(locus: Union[hl.expr.LocusExpression, hl.expr.IntervalE
     return locus.dtype.point_type.reference_genome
 
 
-def filter_to_autosomes(t: Union[hl.MatrixTable, hl.Table]) -> Union[hl.MatrixTable, hl.Table]:
+def filter_to_autosomes(t):
     """
     Filters the Table or MatrixTable to autosomes only.
     This assumes that the input contains a field named `locus` of type Locus
