@@ -286,6 +286,9 @@ def get_expr_for_vep_transcript_ids_set(vep_transcript_consequences_root):
     return hl.set(vep_transcript_consequences_root.map(lambda c: c.transcript_id))
 
 
+def get_expr_for_vep_consequence_categories_set(vep_transcript_consequences_root):
+    return hl.set(vep_transcript_consequences_root.map(lambda c: c.category))
+
 def get_expr_for_worst_transcript_consequence_annotations_struct(
     vep_sorted_transcript_consequences_root, include_coding_annotations=True
 ):
@@ -345,11 +348,14 @@ def get_expr_for_worst_transcript_consequence_annotations_struct(
 
 def compute_derived_vep_fields(mt):
     mt = mt.annotate_rows(sortedTranscriptConsequences = get_expr_for_vep_sorted_transcript_consequences_array(mt.vep))
-    mt = mt.annotate_rows(domains = get_expr_for_vep_protein_domains_set_from_sorted(mt.sortedTranscriptConsequences))
     mt = mt.annotate_rows(transcript_consequence_terms = get_expr_for_vep_consequence_terms_set(mt.sortedTranscriptConsequences))
+    mt = mt.annotate_rows(transcript_consequence_categories = get_expr_for_vep_consequence_categories_set(mt.sortedTranscriptConsequences))
+
     mt = mt.annotate_rows(transcript_ids = get_expr_for_vep_transcript_ids_set(mt.sortedTranscriptConsequences))
     mt = mt.annotate_rows(main_transcript = get_expr_for_worst_transcript_consequence_annotations_struct(mt.sortedTranscriptConsequences))
     mt = mt.annotate_rows(gene_ids = get_expr_for_vep_gene_ids_set(mt.sortedTranscriptConsequences))
     mt = mt.annotate_rows(coding_gene_ids = get_expr_for_vep_gene_ids_set(mt.sortedTranscriptConsequences, only_coding_genes=True))
+    mt = mt.annotate_rows(domains = get_expr_for_vep_protein_domains_set_from_sorted(mt.sortedTranscriptConsequences))
+
 
     return mt
