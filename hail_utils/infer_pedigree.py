@@ -6,6 +6,8 @@ from collections import defaultdict
 import hail as hl
 import logging
 
+from typing import Dict, Tuple, Set, List, Union
+
 from hail_utils.filters import filter_to_biallelics, filter_to_autosomes, ld_prune
 
 
