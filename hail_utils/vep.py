@@ -54,11 +54,11 @@ OMIT_CONSEQUENCE_TERMS = [
     "downstream_gene_variant",
 ]
 
-def get_expr_for_vep_consequence_terms_set(vep_transcript_consequences_root):
-    return hl.set(vep_transcript_consequences_root.flatmap(lambda c: c.consequence_terms))
+def get_expr_for_vep_consequence_terms(vep_transcript_consequences_root):
+    return vep_transcript_consequences_root.flatmap(lambda c: c.consequence_terms)
 
 
-def get_expr_for_vep_gene_ids_set(vep_transcript_consequences_root, only_coding_genes=False):
+def get_expr_for_vep_gene_ids(vep_transcript_consequences_root, only_coding_genes=False):
     """Expression to compute the set of gene ids in VEP annotations for this variant.
 
     Args:
@@ -73,13 +73,15 @@ def get_expr_for_vep_gene_ids_set(vep_transcript_consequences_root, only_coding_
     if only_coding_genes:
         expr = expr.filter(lambda c: hl.or_else(c.biotype, "") == "protein_coding")
 
-    return hl.set(expr.map(lambda c: c.gene_id))
+    return expr.map(lambda c: c.gene_id)
 
 
-def get_expr_for_vep_protein_domains_set(vep_transcript_consequences_root):
-    return hl.set(
-        vep_transcript_consequences_root.flatmap(lambda c: c.domains.map(lambda domain: domain.db + ":" + domain.name))
-    )
+def get_expr_for_vep_protein_domains(vep_transcript_consequences_root):
+    return vep_transcript_consequences_root.flatmap(lambda c: c.domains.map(lambda domain: domain.db + ":" + domain.name))
+
+
+
+
 
 
 PROTEIN_LETTERS_1TO3 = hl.dict(
@@ -249,12 +251,6 @@ def get_expr_for_vep_sorted_transcript_consequences_array(vep_root,
     )
 
 
-def get_expr_for_vep_protein_domains_set_from_sorted(vep_sorted_transcript_consequences_root):
-    return hl.set(
-        vep_sorted_transcript_consequences_root.flatmap(lambda c: c.domains)
-    )
-
-
 def get_expr_for_vep_gene_id_to_consequence_map(vep_sorted_transcript_consequences_root, gene_ids):
     # Manually build string because hl.json encodes a dictionary as [{ key: ..., value: ... }, ...]
     return (
@@ -282,12 +278,12 @@ def get_expr_for_vep_transcript_id_to_consequence_map(vep_transcript_consequence
     )
 
 
-def get_expr_for_vep_transcript_ids_set(vep_transcript_consequences_root):
-    return hl.set(vep_transcript_consequences_root.map(lambda c: c.transcript_id))
+def get_expr_for_vep_transcript_ids(vep_transcript_consequences_root):
+    return vep_transcript_consequences_root.map(lambda c: c.transcript_id)
 
 
-def get_expr_for_vep_consequence_categories_set(vep_transcript_consequences_root):
-    return hl.set(vep_transcript_consequences_root.map(lambda c: c.category))
+def get_expr_for_vep_consequence_categories(vep_transcript_consequences_root):
+    return vep_transcript_consequences_root.map(lambda c: c.category)
 
 def get_expr_for_worst_transcript_consequence_annotations_struct(
     vep_sorted_transcript_consequences_root, include_coding_annotations=True
@@ -347,15 +343,14 @@ def get_expr_for_worst_transcript_consequence_annotations_struct(
 
 
 def compute_derived_vep_fields(ht):
-    mt = ht.annotate(sortedTranscriptConsequences = get_expr_for_vep_sorted_transcript_consequences_array(ht.vep))
-    ht = ht.annotate(transcript_consequence_terms = get_expr_for_vep_consequence_terms_set(ht.sortedTranscriptConsequences))
-    ht = ht.annotate(transcript_consequence_categories = get_expr_for_vep_consequence_categories_set(ht.sortedTranscriptConsequences))
+    ht = ht.annotate(sortedTranscriptConsequences = get_expr_for_vep_sorted_transcript_consequences_array(ht.vep))
+    ht = ht.annotate(transcript_consequence_terms = get_expr_for_vep_consequence_terms(ht.sortedTranscriptConsequences))
+    ht = ht.annotate(transcript_consequence_categories = get_expr_for_vep_consequence_categories(ht.sortedTranscriptConsequences))
 
-    ht = ht.annotate(transcript_ids = get_expr_for_vep_transcript_ids_set(ht.sortedTranscriptConsequences))
+    ht = ht.annotate(transcript_ids = get_expr_for_vep_transcript_ids(ht.sortedTranscriptConsequences))
     ht = ht.annotate(main_transcript = get_expr_for_worst_transcript_consequence_annotations_struct(ht.sortedTranscriptConsequences))
-    ht = ht.annotate(gene_ids = get_expr_for_vep_gene_ids_set(ht.sortedTranscriptConsequences))
-    ht = ht.annotate(coding_gene_ids = get_expr_for_vep_gene_ids_set(ht.sortedTranscriptConsequences, only_coding_genes=True))
-    ht = ht.annotate(domains = get_expr_for_vep_protein_domains_set_from_sorted(ht.sortedTranscriptConsequences))
-
+    ht = ht.annotate(gene_ids = get_expr_for_vep_gene_ids(ht.sortedTranscriptConsequences))
+    ht = ht.annotate(coding_gene_ids = get_expr_for_vep_gene_ids(ht.sortedTranscriptConsequences, only_coding_genes=True))
+    ht = ht.annotate(domains = get_expr_for_vep_protein_domains(ht.sortedTranscriptConsequences))
 
     return ht
