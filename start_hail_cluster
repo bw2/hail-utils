@@ -1,9 +1,11 @@
-n=${2:-0}
+n=${2:-2}
+p=${3:-0}
 hailctl dataproc start \
-	--num-preemptible $n \
+	--num-workers $n \
+	--num-preemptible $p \
 	--max-idle 12h \
 	--init gs://gnomad-public/tools/inits/master-init.sh \
  	--vep GRCh38 \
 	--packages slackclient==2.0.0,websocket-client,sklearn,statsmodels,scikit-learn,hdbscan  $1
 
-
+#--properties=spark:spark.memory.fraction=0.33,spark:spark.yarn.executor.memoryOverhead=15g,spark:spark.executor.memory=15g,spark:spark.driver.maxResultSize=30g \
