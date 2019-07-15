@@ -6,26 +6,21 @@ from collections import defaultdict
 import hail as hl
 import logging
 
-from hail_utils.filters import filter_to_autosomes, ld_prune
+from hail_utils.filters import filter_to_biallelics, filter_to_autosomes, ld_prune
 
 
 def compute_kinship_ht(mt, genome_version="GRCh38"):
 
+    mt = filter_to_biallelics(mt)
+    mt = filter_to_autosomes(mt)
     mt = mt.filter_rows(
-        (hl.len(mt.alleles) == 2) &
-        hl.is_snp(mt.alleles[0], mt.alleles[1])
-    )  # leaves ~80% of variants
+        hl.is_snp(mt.alleles[0], mt.alleles[1]))
 
     mt = hl.variant_qc(mt)
-    mt = mt.filter_rows(
-        mt.variant_qc.call_rate > 0.99
-    )  # leaves ~75% of variants
-
+    mt = mt.filter_rows(mt.variant_qc.call_rate > 0.99)
     mt = mt.filter_rows(mt.info.AF > 0.001) # leaves 100% of variants
-    mt = filter_to_autosomes(mt)
 
     mt = ld_prune(mt, genome_version=genome_version)
-
 
     ibd_results_ht = hl.identity_by_descent(mt, maf=mt.info.AF, min=0.10, max=1.0)
     ibd_results_ht = ibd_results_ht.annotate(
@@ -35,7 +30,23 @@ def compute_kinship_ht(mt, genome_version="GRCh38"):
         pi_hat = ibd_results_ht.ibd.PI_HAT
     ).drop("ibs0","ibs1","ibs2","ibd")
 
-    return ibd_results_ht
+
+    kin_ht = ibd_results_ht
+
+    # filter to anything above the relationship of a grandparent
+    first_degree_pi_hat = .40
+    grandparent_pi_hat = .20
+    grandparent_ibd1 = 0.25
+    grandparent_ibd2 = 0.15
+
+    kin_ht = kin_ht.key_by("i","j")
+    kin_ht = kin_ht.filter(
+        (kin_ht.pi_hat > first_degree_pi_hat) |
+        ((kin_ht.pi_hat > grandparent_pi_hat) & (kin_ht.ibd1 > grandparent_ibd1) & (kin_ht.ibd2 < grandparent_ibd2)))
+
+    kin_ht = kin_ht.annotate(relation = hl.sorted([kin_ht.i, kin_ht.j])) #better variable name
+
+    return kin_ht
 
 
 
@@ -235,3 +246,55 @@ def infer_families(kin_ht: hl.Table,   # the kinship hail table
 
     return hl.Pedigree(trios), duos, decisions
 
+
+
+def get_duplicated_samples_ibd(
+        kin_ht: hl.Table,
+        i_col: str = 'i',
+        j_col: str = 'j',
+        pi_hat_col: str = 'pi_hat',
+        duplicate_threshold: float = 0.90
+) -> List[Set[str]]:
+    """
+    Given a ibd output Table, extract the list of duplicate samples. Returns a list of set of samples that are duplicates.
+    :param Table kin_ht: ibd output table
+    :param str i_col: Column containing the 1st sample
+    :param str j_col: Column containing the 2nd sample
+    :param str pi_hat_col: Column containing the pi_hat value
+    :param float duplicate_threshold: pi_hat threshold to consider two samples duplicated
+    :return: List of samples that are duplicates
+    :rtype: list of set of str
+    """
+
+    def get_all_dups(s, dups, samples_duplicates): # should add docstring (sample, empty set, duplicates)
+        if s in samples_duplicates:
+            dups.add(s)
+            s_dups = samples_duplicates.pop(s) # gives u the value with that key
+            for s_dup in s_dups:
+                if s_dup not in dups:
+                    dups = get_all_dups(s_dup, dups, samples_duplicates)
+        return dups
+
+    dup_rows = kin_ht.filter(kin_ht[pi_hat_col] > duplicate_threshold).collect()
+
+    samples_duplicates = defaultdict(set) #key is sample, value is set of that sample's duplicates
+    for row in dup_rows:
+        samples_duplicates[row[i_col]].add(row[j_col])
+        samples_duplicates[row[j_col]].add(row[i_col])
+
+    duplicated_samples = []
+    while len(samples_duplicates) > 0:
+        duplicated_samples.append(get_all_dups(list(samples_duplicates)[0], set(), samples_duplicates))
+
+    return duplicated_samples
+
+
+def impute_sex(mt):
+    vcf_samples = mt.s.collect()
+    imputed_sex = hl.impute_sex(mt.GT).collect()
+
+    for sample, imputed_sex_struct in zip(vcf_samples, imputed_sex):
+        print(f"{sample}   {'F' if imputed_sex_struct.is_female else 'M'}  {imputed_sex_struct.f_stat:0.3f}   {imputed_sex_struct.observed_homs/imputed_sex_struct.expected_homs:0.2f}")
+
+    is_female_dict = {sample: imputed_sex_struct.is_female for sample, imputed_sex_struct in zip(vcf_samples, imputed_sex)}
+    return is_female_dict

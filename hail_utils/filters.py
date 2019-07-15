@@ -15,6 +15,10 @@ def get_reference_genome(locus) -> hl.ReferenceGenome:
     return locus.dtype.point_type.reference_genome
 
 
+def filter_to_biallelics(mt):
+    return mt.filter_rows(hl.len(mt.alleles) == 2)
+
+
 def filter_to_autosomes(t):
     """
     Filters the Table or MatrixTable to autosomes only.
