@@ -65,7 +65,6 @@ def ld_prune(mt, genome_version="GRCh38"):
     return mt.filter_rows(hl.is_defined(gnomad_ld_pruned_mt.index_rows(mt.row_key)))
 
 
-
 def filter_out_LCRs(mt, genome_version="GRCh38"):
 
     if genome_version == "GRCh38":
