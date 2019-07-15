@@ -1,0 +1,1 @@
+gcloud dataproc clusters update --num-preemptible-workers $2 $1

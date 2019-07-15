@@ -346,16 +346,16 @@ def get_expr_for_worst_transcript_consequence_annotations_struct(
     )
 
 
-def compute_derived_vep_fields(mt):
-    mt = mt.annotate_rows(sortedTranscriptConsequences = get_expr_for_vep_sorted_transcript_consequences_array(mt.vep))
-    mt = mt.annotate_rows(transcript_consequence_terms = get_expr_for_vep_consequence_terms_set(mt.sortedTranscriptConsequences))
-    mt = mt.annotate_rows(transcript_consequence_categories = get_expr_for_vep_consequence_categories_set(mt.sortedTranscriptConsequences))
+def compute_derived_vep_fields(ht):
+    mt = ht.annotate(sortedTranscriptConsequences = get_expr_for_vep_sorted_transcript_consequences_array(ht.vep))
+    ht = ht.annotate(transcript_consequence_terms = get_expr_for_vep_consequence_terms_set(ht.sortedTranscriptConsequences))
+    ht = ht.annotate(transcript_consequence_categories = get_expr_for_vep_consequence_categories_set(ht.sortedTranscriptConsequences))
 
-    mt = mt.annotate_rows(transcript_ids = get_expr_for_vep_transcript_ids_set(mt.sortedTranscriptConsequences))
-    mt = mt.annotate_rows(main_transcript = get_expr_for_worst_transcript_consequence_annotations_struct(mt.sortedTranscriptConsequences))
-    mt = mt.annotate_rows(gene_ids = get_expr_for_vep_gene_ids_set(mt.sortedTranscriptConsequences))
-    mt = mt.annotate_rows(coding_gene_ids = get_expr_for_vep_gene_ids_set(mt.sortedTranscriptConsequences, only_coding_genes=True))
-    mt = mt.annotate_rows(domains = get_expr_for_vep_protein_domains_set_from_sorted(mt.sortedTranscriptConsequences))
+    ht = ht.annotate(transcript_ids = get_expr_for_vep_transcript_ids_set(ht.sortedTranscriptConsequences))
+    ht = ht.annotate(main_transcript = get_expr_for_worst_transcript_consequence_annotations_struct(ht.sortedTranscriptConsequences))
+    ht = ht.annotate(gene_ids = get_expr_for_vep_gene_ids_set(ht.sortedTranscriptConsequences))
+    ht = ht.annotate(coding_gene_ids = get_expr_for_vep_gene_ids_set(ht.sortedTranscriptConsequences, only_coding_genes=True))
+    ht = ht.annotate(domains = get_expr_for_vep_protein_domains_set_from_sorted(ht.sortedTranscriptConsequences))
 
 
-    return mt
+    return ht

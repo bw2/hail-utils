@@ -1,0 +1,1 @@
+hailctl dataproc stop $1
