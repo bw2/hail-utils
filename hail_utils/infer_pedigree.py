@@ -295,8 +295,8 @@ def impute_sex(mt):
     vcf_samples = mt.s.collect()
     imputed_sex = hl.impute_sex(mt.GT).collect()
 
-    for sample, imputed_sex_struct in zip(vcf_samples, imputed_sex):
-        print(f"{sample}   {'F' if imputed_sex_struct.is_female else 'M'}  {imputed_sex_struct.f_stat:0.3f}   {imputed_sex_struct.observed_homs/imputed_sex_struct.expected_homs:0.2f}")
+    #for sample, imputed_sex_struct in zip(vcf_samples, imputed_sex):
+    #    print(f"{sample}   {'F' if imputed_sex_struct.is_female else 'M'}  {imputed_sex_struct.f_stat:0.3f}   {imputed_sex_struct.observed_homs/imputed_sex_struct.expected_homs:0.2f}")
 
     is_female_dict = {sample: imputed_sex_struct.is_female for sample, imputed_sex_struct in zip(vcf_samples, imputed_sex)}
     return is_female_dict
