@@ -11,7 +11,9 @@ def recompute_AC_AN_AF(mt):
 
 def annotate_in_LCR(mt, genome_version="GRCh38"):
 
-    if genome_version == "GRCh38":
+    if genome_version == "GRCh37":
+        lcr_regions = hl.import_locus_intervals("gs://broad-dsp-spec-ops/scratch/weisburd/ref/GRCh37/grch37_LCRs_without_decoys.bed", reference_genome="GRCh37")
+    elif genome_version == "GRCh38":
         lcr_regions = hl.import_locus_intervals("gs://broad-dsp-spec-ops/scratch/weisburd/ref/GRCh38/grch38_LCRs_without_decoys.bed", reference_genome="GRCh38")
     else:
         raise ValueError(f"Invalid genome version: {genome_version}")
@@ -21,7 +23,9 @@ def annotate_in_LCR(mt, genome_version="GRCh38"):
 
 def annotate_in_segdup(mt, genome_version="GRCh38"):
 
-    if genome_version == "GRCh38":
+    if genome_version == "GRCh37":
+        segdup_regions = hl.import_locus_intervals("gs://broad-dsp-spec-ops/scratch/weisburd/ref/GRCh37/GRCh37GenomicSuperDup.bed", reference_genome="GRCh37")
+    elif genome_version == "GRCh38":
         segdup_regions = hl.import_locus_intervals("gs://broad-dsp-spec-ops/scratch/weisburd/ref/GRCh38/GRCh38GenomicSuperDup.without_decoys.bed", reference_genome="GRCh38")
     else:
         raise ValueError(f"Invalid genome version: {genome_version}")
