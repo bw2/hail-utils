@@ -14,10 +14,14 @@ GCS_CONNECTOR_URL = 'https://repo1.maven.org/maven2/com/google/cloud/bigdataoss/
 class PostInstallCommand(install):
 
     def run(self):
+        self.announce(self.install_platlib, level=3)
+        self.announce(self.install_lib, level=3)
+        self.announce(self.install_scripts, level=3)
         #raise ValueError(os.path.abspath(os.getcwd()) + "\n")
         raise ValueError(str(self.install_base) + "\n")
         raise ValueError(str(self.root) + "\n")
 
+        os.path.join(self.install_base,)
         try:
             urllib.request.urlretrieve(GCS_CONNECTOR_URL, '/usr/local/lib/python3.7/site-packages/pyspark/jars/gcs-connector-hadoop2-latest.jar')
         except Exception as e:
