@@ -2,8 +2,7 @@
 
 from setuptools import setup
 
-from distutils.command.sdist import sdist as sdist_orig
-from distutils.errors import DistutilsExecError
+from setuptools.command.install import install
 import os
 import urllib.request
 
@@ -12,7 +11,7 @@ import urllib.request
 GCS_CONNECTOR_URL = 'https://repo1.maven.org/maven2/com/google/cloud/bigdataoss/gcs-connector/hadoop2-1.9.17/gcs-connector-hadoop2-1.9.17.jar'
 
 
-class sdist(sdist_orig):
+class PostInstallCommand(install):
 
     def run(self):
         print("DIRECTORY:")
@@ -24,11 +23,7 @@ class sdist(sdist_orig):
         except Exception as e:
             self.warn('Unable to download GCS connector: ' + str(e))
 
-        #try:
-        #    self.spawn(['ls', '-l'], shell=True)
-        #except DistutilsExecError:
-        #    self.warn('listing directory failed')
-        super().run()
+        install.run(self)
 
 setup(
     name='hail_utils',
@@ -41,6 +36,6 @@ setup(
     license='MIT',
     description='Misc. hail utils',
     cmdclass={
-        'sdist': sdist
-    }
+        'install': PostInstallCommand,
+    },
 )
