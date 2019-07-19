@@ -39,13 +39,13 @@ class PostInstallCommand_v1(install):
 
 
 class PostInstallCommand_v2(install):
-    GCS_CONNECTOR_INSTALL_SCRIPT_URL = "https://github.com/hail-is/hail/blob/master/hail/install-gcs-connector.sh"
+    GCS_CONNECTOR_INSTALL_SCRIPT_URL = "https://raw.githubusercontent.com/hail-is/hail/master/hail/install-gcs-connector.sh"
 
     def run(self):
         install.run(self)
 
         local_script_path = os.path.join(tempfile.tempdir or "/tmp", os.path.basename(PostInstallCommand_v2.GCS_CONNECTOR_INSTALL_SCRIPT_URL))
-        self.announce("Downloading %s to %s" % (PostInstallCommand_v2.GCS_CONNECTOR_INSTALL_SCRIPT_URL, local_script_path))
+        self.announce("Downloading %s to %s" % (PostInstallCommand_v2.GCS_CONNECTOR_INSTALL_SCRIPT_URL, local_script_path), level=3)
         urllib.request.urlretrieve(PostInstallCommand_v2.GCS_CONNECTOR_INSTALL_SCRIPT_URL, local_script_path)
 
         self.spawn(["chmod", "777", local_script_path])
