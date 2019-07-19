@@ -3,10 +3,10 @@
 import os
 import tempfile
 from setuptools import setup
-
 from setuptools.command.install import install
 import urllib.request
 
+from pyspark.find_spark_home import _find_spark_home
 
 class PostInstallCommand_v1(install):
     # from https://mvnrepository.com/artifact/com.google.cloud.bigdataoss/gcs-connector/hadoop2-1.9.17
@@ -15,27 +15,16 @@ class PostInstallCommand_v1(install):
     def run(self):
         install.run(self)
 
-        # try downloading and installing the GCS connector jar into the pyspark site-package
-        for root, dirs, files in os.walk(self.install_base, followlinks=True):
-            pyspark_jars_dir = None
-            for current_dir in dirs:
-                if root.endswith("pyspark") and current_dir == "jars":
-                    pyspark_jars_dir = os.path.join(self.install_base, root, current_dir)
-                    break
+        spark_home = _find_spark_home()
 
-            if pyspark_jars_dir:
-                break
-        else:
-            self.warn("pyspark not found in " + str(self.install_base) + ". Unable to install GCS connector.")
-            return
-
-        local_jar_path = os.path.join(pyspark_jars_dir, os.path.basename(PostInstallCommand_v1.GCS_CONNECTOR_URL))
+        local_jar_path = os.path.join(spark_home, "jars", os.path.basename(PostInstallCommand_v1.GCS_CONNECTOR_URL))
         try:
+            self.announce("Downloading %s to %s" % (PostInstallCommand_v1.GCS_CONNECTOR_URL, local_jar_path), level=3)
             urllib.request.urlretrieve(PostInstallCommand_v1.GCS_CONNECTOR_URL, local_jar_path)
-            self.announce("Installed " + PostInstallCommand_v1.GCS_CONNECTOR_URL + " to " + local_jar_path, level=3)
         except Exception as e:
-            self.warn("Unable to download GCS connector to " + str(local_jar_path) + ". " + str(e))
+            self.warn("Unable to download GCS connector to %s. %s" % (local_jar_path, e))
             return
+
 
 
 class PostInstallCommand_v2(install):
@@ -63,6 +52,7 @@ setup(
     license='MIT',
     description='Misc. hail utils',
     cmdclass={
+        #'install': PostInstallCommand_v1,
         'install': PostInstallCommand_v2,
     },
 )
