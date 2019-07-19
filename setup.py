@@ -1,17 +1,15 @@
 # based on https://uoftcoders.github.io/studyGroup/lessons/python/packages/lesson/
 
+import os
 from setuptools import setup
 
 from setuptools.command.install import install
-import os
 import urllib.request
 
-# from https://mvnrepository.com/artifact/com.google.cloud.bigdataoss/gcs-connector/hadoop2-1.9.17
 
-GCS_CONNECTOR_URL = 'https://repo1.maven.org/maven2/com/google/cloud/bigdataoss/gcs-connector/hadoop2-1.9.17/gcs-connector-hadoop2-1.9.17.jar'
-
-
-class PostInstallCommand(install):
+class PostInstallCommand_v1(install):
+    # from https://mvnrepository.com/artifact/com.google.cloud.bigdataoss/gcs-connector/hadoop2-1.9.17
+    GCS_CONNECTOR_URL = 'https://repo1.maven.org/maven2/com/google/cloud/bigdataoss/gcs-connector/hadoop2-1.9.17/gcs-connector-hadoop2-1.9.17.jar'
 
     def run(self):
         install.run(self)
@@ -30,14 +28,26 @@ class PostInstallCommand(install):
             self.warn("pyspark not found in " + str(self.install_base) + ". Unable to install GCS connector.")
             return
 
-        local_jar_path = os.path.join(pyspark_jars_dir, os.path.basename(GCS_CONNECTOR_URL))
+        local_jar_path = os.path.join(pyspark_jars_dir, os.path.basename(PostInstallCommand_v1.GCS_CONNECTOR_URL))
         try:
-            urllib.request.urlretrieve(GCS_CONNECTOR_URL, local_jar_path)
-            self.announce("Installed " + GCS_CONNECTOR_URL + " to " + local_jar_path, level=3)
+            urllib.request.urlretrieve(PostInstallCommand_v1.GCS_CONNECTOR_URL, local_jar_path)
+            self.announce("Installed " + PostInstallCommand_v1.GCS_CONNECTOR_URL + " to " + local_jar_path, level=3)
         except Exception as e:
             self.warn("Unable to download GCS connector to " + str(local_jar_path) + ". " + str(e))
             return
-            
+
+
+class PostInstallCommand_v2(install):
+    GCS_CONNECTOR_INSTALL_SCRIPT_URL = "https://github.com/hail-is/hail/blob/master/hail/install-gcs-connector.sh"
+
+    def run(self):
+        install.run(self)
+
+        local_script_path = os.path.basename(PostInstallCommand_v2.GCS_CONNECTOR_INSTALL_SCRIPT_URL)
+        urllib.request.urlretrieve(PostInstallCommand_v2.GCS_CONNECTOR_INSTALL_SCRIPT_URL, local_script_path)
+
+        self.spawn(["chmod", "777", local_script_path])
+        self.spawn([local_script_path])
 
 
 setup(
@@ -51,6 +61,6 @@ setup(
     license='MIT',
     description='Misc. hail utils',
     cmdclass={
-        'install': PostInstallCommand,
+        'install': PostInstallCommand_v2,
     },
 )
