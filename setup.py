@@ -14,8 +14,6 @@ GCS_CONNECTOR_URL = 'https://repo1.maven.org/maven2/com/google/cloud/bigdataoss/
 class PostInstallCommand(install):
 
     def run(self):
-        raise ValueError("DIRECTORY:" + "\n")
-        raise ValueError(os.getcwd() + "\n")
         raise ValueError(os.path.abspath(os.getcwd()) + "\n")
         raise ValueError(str(self.build_lib) + "\n")
         raise ValueError(str(self.install_base) + "\n")
