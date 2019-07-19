@@ -28,16 +28,16 @@ class PostInstallCommand(install):
                 break
         else:
             self.warn("pyspark not found in " + str(self.install_base) + ". Unable to install GCS connector.")
+            return
 
-
-        if pyspark_jars_dir:
-            local_jar_path = os.path.join(pyspark_jars_dir, os.path.basename(GCS_CONNECTOR_URL))
-            try:
-                urllib.request.urlretrieve(GCS_CONNECTOR_URL, local_jar_path)
-                self.announce("Installed " + GCS_CONNECTOR_URL + " to " + local_jar_path, level=3)
-            except Exception as e:
-                self.warn("Unable to download GCS connector to " + str(local_jar_path) + ". " + str(e))
-
+        local_jar_path = os.path.join(pyspark_jars_dir, os.path.basename(GCS_CONNECTOR_URL))
+        try:
+            urllib.request.urlretrieve(GCS_CONNECTOR_URL, local_jar_path)
+            self.announce("Installed " + GCS_CONNECTOR_URL + " to " + local_jar_path, level=3)
+        except Exception as e:
+            self.warn("Unable to download GCS connector to " + str(local_jar_path) + ". " + str(e))
+            return
+            
 
 
 setup(
