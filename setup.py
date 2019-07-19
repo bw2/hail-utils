@@ -14,12 +14,12 @@ GCS_CONNECTOR_URL = 'https://repo1.maven.org/maven2/com/google/cloud/bigdataoss/
 class PostInstallCommand(install):
 
     def run(self):
-        sys.stderr.write("DIRECTORY:" + "\n")
-        sys.stderr.write(os.getcwd() + "\n")
-        sys.stderr.write(os.path.abspath(os.getcwd()) + "\n")
-        sys.stderr.write(str(self.build_lib) + "\n")
-        sys.stderr.write(str(self.install_base) + "\n")
-        sys.stderr.write(str(self.root) + "\n")
+        raise ValueError("DIRECTORY:" + "\n")
+        raise ValueError(os.getcwd() + "\n")
+        raise ValueError(os.path.abspath(os.getcwd()) + "\n")
+        raise ValueError(str(self.build_lib) + "\n")
+        raise ValueError(str(self.install_base) + "\n")
+        raise ValueError(str(self.root) + "\n")
 
         try:
             urllib.request.urlretrieve(GCS_CONNECTOR_URL, '/usr/local/lib/python3.7/site-packages/pyspark/jars/gcs-connector-hadoop2-latest.jar')
