@@ -15,7 +15,6 @@ class PostInstallCommand(install):
 
     def run(self):
         #raise ValueError(os.path.abspath(os.getcwd()) + "\n")
-        raise ValueError(str(self.build_lib) + "\n")
         raise ValueError(str(self.install_base) + "\n")
         raise ValueError(str(self.root) + "\n")
 
