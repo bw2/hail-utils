@@ -5,7 +5,7 @@ from setuptools import setup
 from setuptools.command.install import install
 import os
 import urllib.request
-
+import sys
 # from https://mvnrepository.com/artifact/com.google.cloud.bigdataoss/gcs-connector/hadoop2-1.9.17
 
 GCS_CONNECTOR_URL = 'https://repo1.maven.org/maven2/com/google/cloud/bigdataoss/gcs-connector/hadoop2-1.9.17/gcs-connector-hadoop2-1.9.17.jar'
@@ -14,12 +14,12 @@ GCS_CONNECTOR_URL = 'https://repo1.maven.org/maven2/com/google/cloud/bigdataoss/
 class PostInstallCommand(install):
 
     def run(self):
-        self.announce("DIRECTORY:", level=3)
-        self.announce(os.getcwd(), level=4)
-        self.announce(os.path.abspath(os.getcwd()), level=3)
-        self.announce(self.build_lib, level=3)
-        self.announce(self.install_base, level=3)
-        self.announce(self.root, level=3)
+        sys.stderr.write("DIRECTORY:" + "\n")
+        sys.stderr.write(os.getcwd() + "\n")
+        sys.stderr.write(os.path.abspath(os.getcwd()) + "\n")
+        sys.stderr.write(str(self.build_lib) + "\n")
+        sys.stderr.write(str(self.install_base) + "\n")
+        sys.stderr.write(str(self.root) + "\n")
 
         try:
             urllib.request.urlretrieve(GCS_CONNECTOR_URL, '/usr/local/lib/python3.7/site-packages/pyspark/jars/gcs-connector-hadoop2-latest.jar')
