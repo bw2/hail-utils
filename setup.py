@@ -26,6 +26,8 @@ class PostInstallCommand_v1(install):
             return
 
 
+        # TODO handle spark config and account keys
+
 
 class PostInstallCommand_v2(install):
     GCS_CONNECTOR_INSTALL_SCRIPT_URL = "https://raw.githubusercontent.com/hail-is/hail/master/hail/install-gcs-connector.sh"
