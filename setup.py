@@ -1,6 +1,7 @@
 # based on https://uoftcoders.github.io/studyGroup/lessons/python/packages/lesson/
 
 import os
+import tempfile
 from setuptools import setup
 
 from setuptools.command.install import install
@@ -43,7 +44,8 @@ class PostInstallCommand_v2(install):
     def run(self):
         install.run(self)
 
-        local_script_path = os.path.basename(PostInstallCommand_v2.GCS_CONNECTOR_INSTALL_SCRIPT_URL)
+        local_script_path = os.path.join(tempfile.tempdir or "/tmp", os.path.basename(PostInstallCommand_v2.GCS_CONNECTOR_INSTALL_SCRIPT_URL))
+        self.announce("Downloading %s to %s" % (PostInstallCommand_v2.GCS_CONNECTOR_INSTALL_SCRIPT_URL, local_script_path))
         urllib.request.urlretrieve(PostInstallCommand_v2.GCS_CONNECTOR_INSTALL_SCRIPT_URL, local_script_path)
 
         self.spawn(["chmod", "777", local_script_path])
