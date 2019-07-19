@@ -18,6 +18,8 @@ class PostInstallCommand(install):
         print(os.getcwd())
         print(os.path.abspath(os.getcwd()))
 
+        raise ValueError()
+        
         try:
             urllib.request.urlretrieve(GCS_CONNECTOR_URL, '/usr/local/lib/python3.7/site-packages/pyspark/jars/gcs-connector-hadoop2-latest.jar')
         except Exception as e:
