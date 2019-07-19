@@ -14,7 +14,9 @@ GCS_CONNECTOR_URL = 'https://repo1.maven.org/maven2/com/google/cloud/bigdataoss/
 class PostInstallCommand(install):
 
     def run(self):
+        install.run(self)
 
+        # try downloading and installing the GCS connector jar into the pyspark site-package
         for root, dirs, files in os.walk(self.install_base, followlinks=True):
             pyspark_jars_dir = None
             for current_dir in dirs:
@@ -37,7 +39,6 @@ class PostInstallCommand(install):
                 self.warn("Unable to download GCS connector to " + str(local_jar_path) + ". " + str(e))
 
 
-        install.run(self)
 
 setup(
     name='hail_utils',
