@@ -17,7 +17,9 @@ class PostInstallCommand(install):
         self.announce("DIRECTORY:", level=3)
         self.announce(os.getcwd(), level=4)
         self.announce(os.path.abspath(os.getcwd()), level=3)
-        self.announce(self.build_base, level=3)
+        self.announce(self.build_lib, level=3)
+        self.announce(self.install_base, level=3)
+        self.announce(self.root, level=3)
 
         try:
             urllib.request.urlretrieve(GCS_CONNECTOR_URL, '/usr/local/lib/python3.7/site-packages/pyspark/jars/gcs-connector-hadoop2-latest.jar')
