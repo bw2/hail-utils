@@ -17,7 +17,7 @@ class PostInstallCommand(install):
 
         for root, dirs, files in os.walk(self.install_base, followlinks=True):
             for d in files:
-                self.announce(os.path.join(self.root, d), level=3)
+                self.announce(os.path.join(self.install_base, d), level=3)
             pyspark_jars_dir = [d for d in dirs if "pyspark/jars" in d] or ""
             if pyspark_jars_dir:
                 pyspark_jars_dir = pyspark_jars_dir[0]
