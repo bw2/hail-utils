@@ -32,6 +32,7 @@ class PostInstallCommand(install):
             local_jar_path = os.path.join(pyspark_jars_dir, os.path.basename(GCS_CONNECTOR_URL))
             try:
                 urllib.request.urlretrieve(GCS_CONNECTOR_URL, local_jar_path)
+                self.announce("Installed " + local_jar_path, level=3)
             except Exception as e:
                 self.warn("Unable to download GCS connector to " + str(local_jar_path) + ". " + str(e))
 
