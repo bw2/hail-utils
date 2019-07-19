@@ -16,22 +16,26 @@ class PostInstallCommand(install):
     def run(self):
 
         for root, dirs, files in os.walk(self.install_base, followlinks=True):
-            for d in dirs:
-                self.announce(os.path.join(self.install_base, root, d), level=3)
-            pyspark_jars_dir = [d for d in dirs if "pyspark/jars" in d] or ""
+            pyspark_jars_dir = None
+            for current_dir in dirs:
+                if root.endswith("pyspark") and current_dir == "jars":
+                    pyspark_jars_dir = os.path.join(self.install_base, root, current_dir)
+                    break
+
             if pyspark_jars_dir:
-                pyspark_jars_dir = pyspark_jars_dir[0]
                 break
         else:
             self.warn("pyspark not found in " + str(self.install_base) + ". Unable to install GCS connector.")
+            return
 
-        self.announce(self.install_base, level=3)
+        self.announce(pyspark_jars_dir, level=3)
 
-        local_jar_path = os.path.join(self.install_base, pyspark_jars_dir, os.path.basename(GCS_CONNECTOR_URL))
+        local_jar_path = os.path.join(pyspark_jars_dir, os.path.basename(GCS_CONNECTOR_URL))
         try:
             urllib.request.urlretrieve(GCS_CONNECTOR_URL, local_jar_path)
         except Exception as e:
-            self.warn("Unable to download GCS connector. " + str(e))
+            self.warn("Unable to download GCS connector to " + str(local_jar_path) + ". " + str(e))
+            return
 
         install.run(self)
 
