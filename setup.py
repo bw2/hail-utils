@@ -7,7 +7,7 @@ import urllib.request
 
 from pyspark.find_spark_home import _find_spark_home
 
-GCS_CONNECTOR_URL = 'https://repo1.maven.org/maven2/com/google/cloud/bigdataoss/gcs-connector/hadoop2-1.9.17/gcs-connector-hadoop2-1.9.17.jar'
+GCS_CONNECTOR_URL = 'https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop2-latest.jar'
 GENERIC_KEY_FILE_URL = 'https://raw.githubusercontent.com/macarthur-lab/seqr/master/deploy/secrets/shared/gcloud/service-account-key.json'
 
 class PostInstallCommand(install):
