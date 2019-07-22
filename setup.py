@@ -60,14 +60,13 @@ class PostInstallCommand(install):
         self.announce("Setting json.keyfile to %s in %s" % (key_file_path, spark_config_file_path), level=3)
 
         spark_config_lines = [
-            "spark.hadoop.google.cloud.auth.service.account.enable true",
-            "spark.hadoop.google.cloud.auth.service.account.json.keyfile %s" % key_file_path,
+            "spark.hadoop.google.cloud.auth.service.account.enable true\n",
+            "spark.hadoop.google.cloud.auth.service.account.json.keyfile %s\n" % key_file_path,
         ]
         try:
             if os.path.isfile(spark_config_file_path):
                 with open(spark_config_file_path, "rt") as f:
                     for line in f:
-                        line = line.rstrip("\n")
                         if "spark.hadoop.google.cloud.auth.service.account.enable" in line:
                             continue
                         if "spark.hadoop.google.cloud.auth.service.account.json.keyfile" in line:
@@ -77,7 +76,7 @@ class PostInstallCommand(install):
 
             with open(spark_config_file_path, "wt") as f:
                 for line in spark_config_lines:
-                    f.write(line + "\n")
+                    f.write(line)
 
         except Exception as e:
             self.warn("Unable to update spark config %s. %s" % (spark_config_file_path, e))
