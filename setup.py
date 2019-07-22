@@ -83,9 +83,6 @@ class PostInstallCommand(install):
             self.warn("Unable to update spark config %s. %s" % (spark_config_file_path, e))
             return
 
-        #self.spawn(["chmod", "777", local_script_path])
-
-
 setup(
     name='hail_utils',
     url='https://github.com/bw2/hail-utils',
