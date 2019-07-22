@@ -37,7 +37,7 @@ class PostInstallCommand(install):
             self.warn("No keys found in %s. %s" % (key_file_regexp, e))
             key_file_path = None
 
-        # download key file
+        # if existing keys not found, download generic key file that allows access to public (bucket-owner-pays) buckets.
         if key_file_path is None:
             local_key_dir = os.path.expanduser("~/.hail/gcs-keys")
             try:
