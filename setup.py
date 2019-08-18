@@ -3,6 +3,7 @@ import glob
 import os
 from setuptools import setup
 from setuptools.command.install import install
+import socket
 import urllib.request
 
 from pyspark.find_spark_home import _find_spark_home
@@ -10,11 +11,25 @@ from pyspark.find_spark_home import _find_spark_home
 GCS_CONNECTOR_URL = 'https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop2-latest.jar'
 GENERIC_KEY_FILE_URL = 'https://raw.githubusercontent.com/macarthur-lab/seqr/master/deploy/secrets/shared/gcloud/service-account-key.json'
 
+def is_dataproc_VM():
+    """Check if this installation is being executed on a Google Compute Engine dataproc VM"""
+    try:
+        dataproc_metadata = urllib.request.urlopen("http://metadata.google.internal/0.1/meta-data/attributes/dataproc-bucket").read()
+        if dataproc_metadata.decode("UTF-8").startswith("dataproc"):
+            return True
+    except:
+        pass
+    return False
+    
+    
 class PostInstallCommand(install):
     # from https://mvnrepository.com/artifact/com.google.cloud.bigdataoss/gcs-connector/hadoop2-1.9.17
 
     def run(self):
         install.run(self)
+        
+        if is_dataproc_VM():
+            return  # cloud connector is installed automatically on dataproc VMs 
 
         spark_home = _find_spark_home()
 
