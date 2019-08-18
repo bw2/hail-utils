@@ -29,6 +29,7 @@ class PostInstallCommand(install):
         install.run(self)
         
         if is_dataproc_VM():
+            self.announce("Running on Dataproc VM. Skipping GCS cloud connector installation.", level=3)
             return  # cloud connector is installed automatically on dataproc VMs 
 
         spark_home = _find_spark_home()
