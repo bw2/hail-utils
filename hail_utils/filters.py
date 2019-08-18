@@ -37,7 +37,7 @@ def filter_to_autosomes(t):
 def get_gnomad_ld_pruned_mt(genome_version="GRCh38"):
 
     gnomad_ld_pruned_hg37_path = "gs://gnomad/sample_qc/mt/gnomad.joint.high_callrate_common_biallelic_snps.pruned.mt"
-    gnomad_ld_pruned_hg38_path = "gs://seqr-bw2/ref/GRCh38/gnomad_ld_pruned.mt"
+    gnomad_ld_pruned_hg38_path = "gs://seqr-bw/ref/GRCh38/gnomad_ld_pruned.mt"
 
     if genome_version == "GRCh37":
         return hl.read_matrix_table(gnomad_ld_pruned_hg37_path)
@@ -45,8 +45,11 @@ def get_gnomad_ld_pruned_mt(genome_version="GRCh38"):
         if not file_exists(gnomad_ld_pruned_hg38_path):
 
             grch37 = hl.get_reference('GRCh37')
-            grch37.add_liftover("gs://hail-common/references/grch37_to_grch38.over.chain.gz", 'GRCh38') # doesn't like when try to add on chain file more than once
-
+            try:
+                grch37.add_liftover("gs://hail-common/references/grch37_to_grch38.over.chain.gz", 'GRCh38') # doesn't like when try to add on chain file more than once
+            except:  # in case the lift-over chain file was added previously
+                pass
+            
             gnomad_ld_pruned_mt = hl.read_matrix_table(gnomad_ld_pruned_hg37_path)
             gnomad_ld_pruned_mt = gnomad_ld_pruned_mt.annotate_rows(liftover_locus = hl.liftover(gnomad_ld_pruned_mt.locus, 'GRCh38'))
             gnomad_ld_pruned_mt = gnomad_ld_pruned_mt.filter_rows(hl.is_defined(gnomad_ld_pruned_mt.liftover_locus))
