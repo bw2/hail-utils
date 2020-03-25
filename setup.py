@@ -72,7 +72,10 @@ class PostInstallCommand(install):
                 return
 
         # update spark-defaults.conf
-        spark_config_file_path = os.path.join(spark_home, "conf/spark-defaults.conf")
+        spark_config_dir = os.path.join(spark_home, "conf")
+        if not os.path.exists(spark_config_dir):
+            os.mkdir(spark_config_dir)
+        spark_config_file_path = os.path.join(spark_config_dir, "spark-defaults.conf")
         self.announce("Setting json.keyfile to %s in %s" % (key_file_path, spark_config_file_path), level=3)
 
         spark_config_lines = [
