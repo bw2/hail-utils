@@ -7,7 +7,7 @@ def compute_mendel_denovos(mt, pedigree):
 
 
 def compute_samocha_denovos(mt, pedigree):
-    gnomad_ht = hl.read_table("gs://seqr-reference-data/GRCh38/gnomad/gnomad.exomes.r2.1.1.sites.liftover_grch38.ht")
+    gnomad_ht = hl.read_table("gs://gnomad-public/release/2.1.1/liftover_grch38/ht/exomes/gnomad.exomes.r2.1.1.sites.liftover_grch38.ht")
     gnomad_ht = hl.split_multi_hts(gnomad_ht)
 
     de_novo_priors_ht = gnomad_ht.select(AF=gnomad_ht.freq[gnomad_ht.freq_index_dict["gnomad"]].AF)
