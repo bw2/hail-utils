@@ -20,7 +20,7 @@ def compute_kinship_ht(mt, genome_version="GRCh38"):
 
     mt = hl.variant_qc(mt)
     mt = mt.filter_rows(mt.variant_qc.call_rate > 0.99)
-    mt = mt.filter_rows(mt.info.AF > 0.001) # leaves 100% of variants
+    #mt = mt.filter_rows(mt.info.AF > 0.001) # leaves 100% of variants
 
     mt = ld_prune(mt, genome_version=genome_version)
 
