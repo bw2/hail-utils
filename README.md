@@ -1,14 +1,14 @@
 
-**register_your_hail_service_account_as_terra_user.py** 
+**register_hail_batch_service_account_as_terra_user.py** 
 
 This Hail Batch pipeline registers your Hail Batch service account with Terra.   
 
 
 **Command lines options:**
 ```
-~$ python3 register_your_hail_service_account_as_terra_user.py --help
+~$ python3 register_hail_batch_service_account_as_terra_user.py --help
 
-usage: register_your_hail_service_account_as_terra_user.py [-h] -b BILLING_PROJECT -t TMP_BUCKET -e EMAIL
+usage: register_hail_batch_service_account_as_terra_user.py [-h] -b BILLING_PROJECT -t TMP_BUCKET -e EMAIL
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -24,7 +24,7 @@ optional arguments:
 ```
 # This registers the Hail Batch weisburd-wfz@hail-vdc.iam.gserviceaccount.com service account with Terra
 
-python3 register_your_hail_service_account_as_terra_user.py -t gs://delete-after-5days -b my-billing-project  -e weisburd-wfz@hail-vdc.iam.gserviceaccount.com
+python3 register_hail_batch_service_account_as_terra_user.py -t gs://delete-after-5days -b my-billing-project  -e weisburd-wfz@hail-vdc.iam.gserviceaccount.com
 ```
 
 *NOTE: This step is required before your Hail Batch service account can be granted access to Terra buckets (as described in "[When and how to use a service account in Terra](https://support.terra.bio/hc/en-us/articles/7448594459931-When-and-how-to-use-a-service-account-in-Terra)").*
