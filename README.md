@@ -5,7 +5,7 @@ This Hail Batch pipeline registers your Hail Batch service account with Terra.
 The -e arg should be the service account email address listed under "Google Service Account:" @ [https://auth.hail.is/user](https://auth.hail.is/user).
 
 
-**Command lines options:**
+**Command line options:**
 ```
 ~$ python3 register_hail_batch_service_account_as_terra_user.py --help
 
