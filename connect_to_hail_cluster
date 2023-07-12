@@ -1,2 +1,0 @@
-
-hailctl dataproc connect $1 nb

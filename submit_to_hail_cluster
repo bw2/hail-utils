@@ -1,4 +1,0 @@
-export HAIL_SCRIPTS=~/code/hail_utils:~/code/gnomad_qc:~/code/gnomad_hail
-cluster=$1 ; shift
-script=$1 ; shift
-hailctl dataproc submit $cluster $script $@ 
