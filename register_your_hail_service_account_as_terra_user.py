@@ -22,6 +22,8 @@ b = hb.Batch(name=JOB_NAME, backend=service_backend)
 j = b.new_job(name=JOB_NAME)
 j.image(DOCKER_IMAGE)
 j.command("set -x")
+
+# rewrite the firecloud-tools version of register_service_account.py to work around https://github.com/broadinstitute/firecloud-tools/issues/46
 j.command("""cat > scripts/register_service_account/register_service_account.py <<EOF
 from common import *
 from argparse import ArgumentParser
@@ -71,5 +73,6 @@ if __name__ == "__main__":
     main()
 EOF""")
 
+# run the register_service_account.py script
 j.command(f"python scripts/register_service_account/register_service_account.py -j /gsa-key/key.json -e {args.email}")
 b.run()
